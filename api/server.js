@@ -21,8 +21,12 @@ app.post('/api/car-info', (req, res) => {
 
 app.post('/api/get-diagnostic', async (req, res) => {
   const jobDescription = typeof req.body === 'object' && 'text' in req.body ? req.body.text : '';
-  const prompt = `Tell me what is wrong with this car ${jobDescription}.
+  const prompt = `You are an expert mechanic. Diagnose the car with the following description:
+  Make: ${req.body.make}, Model: ${req.body.model}, Year: ${req.body.year}.
+  The customer stated that the car has the following issue: ${req.body.issue}.
+  Respond with a detailed diagnostic report of the car's issue.
   `;
+  console.log(prompt)
   try {
     const completion = await client.chat.completions.create({
       model: "gpt-3.5-turbo",
