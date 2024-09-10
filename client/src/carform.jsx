@@ -9,6 +9,7 @@ const CarForm = () => {
     issue: ''
   });
   const [submitted, setSubmitted] = useState(false);
+  const [diagnosticResult, setDiagnosticResult] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,9 +19,28 @@ const CarForm = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitted(true);
+
+    try {
+      const response = await fetch('http://localhost:3001/api/get-diagnostic', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(carInfo),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setDiagnosticResult(data.diagnostic);
+      } else {
+        console.error('Failed to submit car information');
+      }
+    } catch (error) {
+      console.error('Error submitting car information:', error);
+    }
   };
 
   return (
@@ -80,6 +100,7 @@ const CarForm = () => {
           <p>Model: {carInfo.model}</p>
           <p>Year: {carInfo.year}</p>
           <p>Issue: {carInfo.issue}</p>
+          <p>Diagnostic: {diagnosticResult}</p>
         </div>
       )}
     </div>
